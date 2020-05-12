@@ -21,6 +21,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
+    jwt (2.2.1)
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -40,6 +41,9 @@ GEM
     puma (4.3.3)
       nio4r (~> 2.0)
     rack (2.2.2)
+    rack-jwt (0.4.0)
+      jwt (~> 2.0)
+      rack (>= 1.6.0)
     rack-protection (2.0.8.1)
       rack
     rack-test (1.1.0)
@@ -82,6 +86,7 @@ DEPENDENCIES
   pg
   pry-byebug
   puma
+  rack-jwt
   rack-test
   rake
   rspec

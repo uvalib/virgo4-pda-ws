@@ -10,6 +10,8 @@ gem 'pg'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 
+gem 'rack-jwt'
+
 group :test, :development do
   gem 'rspec'
   gem 'rack-test'
