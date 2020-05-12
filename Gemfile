@@ -15,4 +15,3 @@ group :test, :development do
   gem 'rack-test'
   gem 'pry-byebug'
 end
-

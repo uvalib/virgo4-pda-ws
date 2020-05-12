@@ -1,0 +1,14 @@
+# aliases we like
+alias ll='ls -al'
+alias bdf='df -k'
+
+# prompt
+export HOST=$(hostname -s)
+export PWD=`pwd`
+export PS1='(virgo4-pda-ws:$HOST) $PWD$ '
+
+# command editor
+set -o vi
+
+# needed cos this base image installs here
+export PATH=$PATH:/usr/local/bundle/bin

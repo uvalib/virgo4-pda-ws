@@ -19,8 +19,9 @@ WORKDIR $APP_HOME
 
 # Copy the Gemfile into the image and temporarily set the working directory to where they are.
 ADD Gemfile Gemfile.lock .ruby-gemset ./
-RUN rm -rf tmp/cache/*
+#RUN rm -rf tmp/cache/*
 
+# install the gems
 RUN bundle install --jobs=4 --without="development test"
 
 # install the app and bundle
@@ -37,4 +38,4 @@ EXPOSE 8080
 CMD scripts/entry.sh
 
 # move in the profile
-#COPY package/container_bash_profile /home/docker/.profile
+COPY package/container_bash_profile /home/docker/.profile

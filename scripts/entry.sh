@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-puma -p 8080
+# run the server
+puma -e production -p 8080

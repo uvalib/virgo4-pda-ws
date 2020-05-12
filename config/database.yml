@@ -1,14 +1,18 @@
 default: &default
   adapter: postgresql
-  encoding: unicode
+  #encoding: unicode
   pool: 2
-  username: naw4t
+  encoding: utf8
+  host: <%= ENV['DBHOST'] %>
+  database: <%= ENV['DBNAME'] %>
+  username: <%= ENV['DBUSER'] %>
+  password: <%= ENV['DBPASSWD'] %>
 
 development:
   <<: *default
-  database: virgo4_pda_development
 
 test:
   <<: *default
-  database: virgo4_pda_test
 
+production:
+  <<: *default
