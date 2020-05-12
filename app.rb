@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-
-# myapp.rb
 require 'sinatra'
 require 'json'
 require "sinatra/activerecord"

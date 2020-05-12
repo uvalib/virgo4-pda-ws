@@ -6,8 +6,6 @@ class Order < ActiveRecord::Base
 
     validate :user_authorized?
 
-
-
     private
 
     def get_fund_code
