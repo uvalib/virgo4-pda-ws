@@ -30,6 +30,10 @@ COPY . $APP_HOME
 # Update permissions
 RUN chown -R docker $APP_HOME && chgrp -R sse $APP_HOME
 
+# Add the build tag
+ARG BUILD_TAG
+RUN test -n "$BUILD_TAG" && touch $APP_HOME/buildtag.build-$BUILD_TAG || touch $APP_HOME/buildtag.build-0
+
 # Specify the user
 USER docker
 

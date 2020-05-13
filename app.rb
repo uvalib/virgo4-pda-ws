@@ -4,6 +4,7 @@ require 'sinatra'
 require 'json'
 require 'sinatra/activerecord'
 require 'rack/jwt'
+
 current_dir = Dir.pwd
 Dir["#{current_dir}/models/*.rb"].each { |file| require file }
 
@@ -53,7 +54,6 @@ get '/version' do
   end
 
   return {
-    buildtag: buildtag,
-    git_commit: %x{git log --pretty=format:'%h' -n 1}
+    buildtag: buildtag
   }.to_json
 end
