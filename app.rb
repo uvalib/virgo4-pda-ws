@@ -27,8 +27,11 @@ get '/orders/:id' do |id|
 end
 
 post '/orders' do
+  token = request.env['HTTP_AUTHORIZATION'].match(/^Bearer\s+(.*)$/).captures.first
+  claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
+  params[:user_claims] = claims.first
   order = Order.new(params)
-  if order.save
+  if order.save && order.submit_order
     status 201
     order.to_json
   else

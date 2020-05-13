@@ -1,25 +1,26 @@
 class Order < ActiveRecord::Base
 
-  validates_presence_of :catalog_key, :computing_id, :hold_library,
+  validates_presence_of :isbn, :catalog_key, :computing_id, :hold_library,
     :fund_code, :loan_type
     #:vendor_order_number
 
-    validate :user_authorized?
+  validate :user_authorized?
+  attr_accessor :user_claims
 
-    private
+  def submit_order
 
-    def get_fund_code
-      # comes from marc record
-      # none?: 'COUTTS1PD'
+  end
+
+  private
+
+  # Check user ability to make purchases
+  def user_authorized?
+    if user_claims.present? && user_claims[:canPurchase]
+      self.computing_id = user_claims[:userId]
+      return true
+    else
+      errors.add(:user, 'is not authorized to make purchases')
+      return false
     end
-
-    # Check user status
-    def user_authorized?
-     # From Virgo3:
-     # account.barred?
-     # acct.faculty? || acct.instructor? || acct.staff? ||
-     #   acct.graduate? || acct.undergraduate?
-
-      true
-    end
+  end
 end
