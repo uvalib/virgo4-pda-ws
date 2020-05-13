@@ -3,10 +3,11 @@ default: &default
   #encoding: unicode
   pool: 5
   encoding: utf8
-  host: <%= ENV['DBHOST'] %>
+  host:     <%= ENV['DBHOST'] %>
+  port:     <%= ENV['DBPORT'] %>
   database: <%= ENV['DBNAME'] %>
   username: <%= ENV['DBUSER'] %>
-  password: <%= ENV['DBPASSWD'] %>
+  password: <%= ENV['DBPASS'] %>
 
 development:
   <<: *default
