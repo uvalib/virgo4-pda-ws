@@ -11,6 +11,7 @@ gem 'activerecord'
 gem 'sinatra-activerecord'
 
 gem 'rack-jwt'
+gem 'rack-cors', require: 'rack/cors'
 
 group :test, :development do
   gem 'rspec'

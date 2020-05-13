@@ -5,11 +5,12 @@ class Order < ActiveRecord::Base
   default_timeout 5
 
   attr_accessor :user_claims
+  validate :user_authorized?
   validates_presence_of :isbn, :catalog_key, :computing_id, :hold_library,
     :fund_code, :loan_type
 
-  validate :user_authorized?
   validates_uniqueness_of :isbn, message: 'has already been ordered'
+
 
   def submit_order
     order_data = {

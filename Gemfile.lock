@@ -41,6 +41,8 @@ GEM
     puma (4.3.3)
       nio4r (~> 2.0)
     rack (2.2.2)
+    rack-cors (1.1.1)
+      rack (>= 2.0.0)
     rack-jwt (0.4.0)
       jwt (~> 2.0)
       rack (>= 1.6.0)
@@ -86,6 +88,7 @@ DEPENDENCIES
   pg
   pry-byebug
   puma
+  rack-cors
   rack-jwt
   rack-test
   rake

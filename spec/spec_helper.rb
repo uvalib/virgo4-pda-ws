@@ -5,6 +5,11 @@ require 'rspec'
 require 'pry-byebug'
 
 ENV['RACK_ENV'] = 'test'
+Bundler.require :default, ENV['RACK_ENV']
+
+current_dir = Dir.pwd
+Dir["#{current_dir}/models/*.rb"].each { |file| require file }
+
 require File.expand_path '../../app.rb', __FILE__
 
 

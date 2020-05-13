@@ -1,23 +1,7 @@
-require 'rubygems'
-require 'bundler/setup'
-require 'sinatra'
-require 'json'
-require 'sinatra/activerecord'
-require 'rack/jwt'
 
-current_dir = Dir.pwd
-Dir["#{current_dir}/models/*.rb"].each { |file| require file }
-
-#
-# JWT Auth
-#
-unless ENV['V4_JWT_KEY']
-  raise "V4_JWT_KEY required."
+before do
+  content_type :json
 end
-NO_AUTH_PATHS = %w(/version /healthcheck)
-use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
-                      exclude: NO_AUTH_PATHS
-                     }
 
 get '/orders' do
   Order.all.to_json
@@ -54,6 +38,6 @@ get '/version' do
   end
 
   return {
-    buildtag: buildtag
+    build: buildtag
   }.to_json
 end
