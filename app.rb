@@ -36,7 +36,7 @@ post '/orders' do
     order.to_json
   else
     status 400
-    order.errors.to_json
+    order.errors.full_messages.to_json
   end
 end
 
