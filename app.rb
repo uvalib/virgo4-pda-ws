@@ -7,8 +7,12 @@ get '/orders' do
   Order.all.to_json
 end
 
-get '/orders/:id' do |id|
-  Order.find(id).to_json
+get '/check/:id' do |id|
+  if Order.exists?(catalog_key: id)
+    status 200
+  else
+    status 404
+  end
 end
 
 post '/orders' do
