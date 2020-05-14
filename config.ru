@@ -23,6 +23,11 @@ use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algori
                       exclude: NO_AUTH_PATHS
                      }
 
+set :server, :puma
+set :logger, Logger.new(STDOUT)
+enable :logging
+$logger = Sinatra::Application.logger
+
 # require models
 current_dir = Dir.pwd
 Dir["#{current_dir}/models/*.rb"].each { |file| require file }

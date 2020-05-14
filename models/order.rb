@@ -1,8 +1,7 @@
 class Order < ActiveRecord::Base
-  require 'httparty'
   include HTTParty
   base_uri ENV['PROQUEST_BASE_URL']
-  default_timeout 5
+  default_timeout 8
 
   attr_accessor :user_claims
   validate :user_authorized?
@@ -24,14 +23,15 @@ class Order < ActiveRecord::Base
       Budget: fund_code,
       Loantype: loan_type
     }
+
     order_response = self.class.get('/order', query: order_data)
 
-    if response.success?
+    if order_response.success?
       self.vendor_order_number = order_response.parsed_response['OrderNumber']
-      logger.info "Successful ProQuest response for order: #{self.as_json}"
+      $logger.info "Order Created"
       return self.save
     else
-      logger.error "ProQuest API failure: #{response.body}"
+      $logger.error "ProQuest API failure: #{response.body}"
       errors.add(:base, 'There was a problem creating this order with ProQuest. Please try again later.')
       return false
     end
