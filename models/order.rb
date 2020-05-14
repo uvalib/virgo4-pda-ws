@@ -8,7 +8,8 @@ class Order < ActiveRecord::Base
   validates_presence_of :isbn, :catalog_key, :computing_id, :hold_library,
     :fund_code, :loan_type
 
-  validates_uniqueness_of :isbn, message: 'has already been ordered'
+  # Custom validation messages go in config/locales/en.yml
+  validates_uniqueness_of :isbn
 
 
   def submit_order

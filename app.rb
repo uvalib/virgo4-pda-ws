@@ -21,7 +21,7 @@ post '/orders' do
     order.to_json
   else
     status 400
-    order.errors.full_messages.to_json
+    {error: order.errors.full_messages.to_sentence}.to_json
   end
 end
 

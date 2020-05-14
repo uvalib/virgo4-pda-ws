@@ -1,0 +1,19 @@
+en:
+  activerecord:
+    models:
+      order: "Order"
+    attributes:
+      order:
+        isbn: "This item"
+        catalog_key: "Catalog Item"
+        computing_id: "User ID"
+        hold_library: "Location"
+        fund_code: "Fund Code"
+        loan_type: "Loan Type"
+    errors:
+      models:
+        order:
+          blank: 'is required'
+          attributes:
+            isbn:
+              taken: "has already been ordered"

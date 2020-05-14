@@ -13,20 +13,29 @@ use Rack::Cors do
   end
 end
 
-# JWT Auth
-#
-unless ENV['V4_JWT_KEY']
-  raise "V4_JWT_KEY required."
-end
-NO_AUTH_PATHS = %w(/version /healthcheck)
-use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
-                      exclude: NO_AUTH_PATHS
-                     }
 
-set :server, :puma
-set :logger, Logger.new(STDOUT)
-enable :logging
-$logger = Sinatra::Application.logger
+configure do
+  # JWT Auth
+  #
+  unless ENV['V4_JWT_KEY']
+    raise "V4_JWT_KEY required."
+  end
+  NO_AUTH_PATHS = %w(/version /healthcheck)
+  use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
+                        exclude: NO_AUTH_PATHS
+                      }
+
+  set :server, :puma
+  set :logger, Logger.new(STDOUT)
+  enable :logging
+  require 'i18n'
+  require 'i18n/backend/fallbacks'
+  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+  I18n.load_path = Dir[File.join(settings.root, 'config', 'locales', '*.yml')]
+  I18n.backend.load_translations
+  I18n.default_locale = :en
+  $logger = Sinatra::Application.logger
+end
 
 # require models
 current_dir = Dir.pwd
