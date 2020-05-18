@@ -6,6 +6,16 @@ require 'bundler'
 # generally specify 'require' in the Gemfile instead of here
 Bundler.require :default, ENV['RACK_ENV']
 
+
+#
+# Prometheus
+#
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
+use Rack::Deflater, if: ->(_, _, _, body) { body.respond_to?( :map ) && body.map(&:bytesize).reduce(0, :+) > 512 }
+use Prometheus::Middleware::Collector
+use Prometheus::Middleware::Exporter
+
 use Rack::Cors do
   allow do
     origins '*'

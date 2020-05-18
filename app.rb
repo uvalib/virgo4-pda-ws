@@ -30,7 +30,7 @@ post '/orders' do
 end
 
 get '/healthcheck' do
-  return nil
+  return {}.to_json
 end
 
 get '/version' do

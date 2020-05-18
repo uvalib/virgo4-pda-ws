@@ -13,6 +13,9 @@ gem 'sinatra-activerecord'
 gem 'rack-jwt'
 gem 'rack-cors', require: 'rack/cors'
 
+# prometheus for monitoring
+gem 'prometheus-client'
+
 group :test, :development do
   gem 'rspec'
   gem 'rack-test'
