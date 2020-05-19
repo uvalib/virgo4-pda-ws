@@ -30,7 +30,16 @@ post '/orders' do
 end
 
 get '/healthcheck' do
-  return {}.to_json
+  begin
+  ActiveRecord::Base.connection
+  postgres_healthy = ActiveRecord::Base.connected?
+  return {postgres: {healthy: postgres_healthy}}.to_json
+
+  rescue StandardError => e
+    $logger.error e
+    status 500
+    return {postgres: {healthy: false, message: e.message}}.to_json
+  end
 end
 
 get '/version' do
