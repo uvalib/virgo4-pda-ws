@@ -5,8 +5,7 @@ class Order < ActiveRecord::Base
 
   attr_accessor :user_claims
   validate :user_authorized?
-  validates_presence_of :isbn, :catalog_key, :computing_id, :hold_library,
-    :fund_code, :loan_type
+  validates_presence_of :isbn, :catalog_key, :hold_library, :fund_code, :loan_type
 
   # Custom validation messages go in config/locales/en.yml
   validates_uniqueness_of :isbn
