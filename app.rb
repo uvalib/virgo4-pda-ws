@@ -3,6 +3,8 @@ before do
   content_type :json
 end
 
+helpers EmailHelpers
+
 get '/orders' do
   Order.all.to_json
 end
@@ -21,13 +23,14 @@ post '/orders' do
   claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
   params[:user_claims] = claims.first
   params[:jwt] = jwt
-  order = Order.new(params)
-  if order.save && order.submit_order
+  @order = Order.new(params)
+  if @order.save && @order.submit_order
+    send_confirmation_email
     status 201
-    order.to_json
+    @order.to_json
   else
     status 400
-    {error: order.errors.full_messages.to_sentence}.to_json
+    {error: @order.errors.full_messages.to_sentence}.to_json
   end
 end
 

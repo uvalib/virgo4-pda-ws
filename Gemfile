@@ -9,6 +9,7 @@ gem 'httparty'
 gem 'pg'
 gem 'activerecord'
 gem 'sinatra-activerecord'
+gem 'pony'
 
 gem 'rack-jwt'
 gem 'rack-cors', require: 'rack/cors'

@@ -45,11 +45,24 @@ configure do
   I18n.backend.load_translations
   I18n.default_locale = :en
   $logger = Sinatra::Application.logger
+
+  # Email config
+  Pony.options = {
+                  from: ENV['SMTP_FROM_EMAIL'],
+                  via: :smtp,
+                  via_options: {
+                    address: ENV['SMTP_ADDRESS'],
+                    port: ENV['SMTP_PORT']
+                  }
+                }
+
 end
 
 # require models
 current_dir = Dir.pwd
 Dir["#{current_dir}/models/*.rb"].each { |file| require file }
+
+Dir["#{current_dir}/helpers/*.rb"].each { |file| require file }
 
 require './app'
 
