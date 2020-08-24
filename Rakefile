@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler'
-Bundler.require :default
+Bundler.require :default, ENV['RACK_ENV']
 
 require "sinatra/activerecord/rake"
 Dir.glob('lib/tasks/*.rake').each { |r| load r}

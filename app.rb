@@ -16,9 +16,11 @@ get '/check/:id' do |id|
 end
 
 post '/orders' do
-  token = request.env['HTTP_AUTHORIZATION'].match(/^Bearer\s+(.*)$/).captures.first
+  jwt = request.env['HTTP_AUTHORIZATION']
+  token = jwt.match(/^Bearer\s+(.*)$/).captures.first
   claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
   params[:user_claims] = claims.first
+  params[:jwt] = jwt
   order = Order.new(params)
   if order.save && order.submit_order
     status 201
@@ -54,3 +56,4 @@ get '/version' do
     build: buildtag
   }.to_json
 end
+
