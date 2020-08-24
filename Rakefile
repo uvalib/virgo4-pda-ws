@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler'
-Bundler.require :default, ENV['RACK_ENV']
+Bundler.require :default
 
 
 require "sinatra/activerecord/rake"
