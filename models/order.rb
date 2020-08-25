@@ -25,8 +25,11 @@ class Order < ActiveRecord::Base
       Budget: fund_code,
       Loantype: loan_type
     }
-
-    order_response = self.class.get('/order', query: order_data)
+    order_response = nil
+    time = Benchmark.realtime do
+      order_response = self.class.get('/order', query: order_data)
+    end
+    $logger.info "Proquest Response: #{order_response.code} - #{(time * 1000).round} mS"
 
     if order_response.success?
       self.vendor_order_number = order_response.parsed_response['OrderNumber']
@@ -34,7 +37,7 @@ class Order < ActiveRecord::Base
       if saved = self.save
         create_sirsi_hold
       else
-        $logger.warn "Problem saving after order #{id} sent to Proquest. #{self.errors.full_messages}"
+        $logger.error "ERROR saving after order #{id} sent to Proquest. #{self.errors.full_messages}"
       end
       return saved
     else
@@ -63,13 +66,20 @@ class Order < ActiveRecord::Base
       itemBarcode: barcode,
       pickupLibrary: 'CLEMONS'
     }
-    sirsi_response = self.class.post('/v4/requests/hold',
-      base_uri: ENV['ILS_CONNECTOR_BASE_URL'],
-      body: sirsi_data,
-      headers: {Authorization: jwt}
-    )
+    sirsi_response = nil
+
+    time = Benchmark.realtime do
+      sirsi_response = self.class.post('/v4/requests/hold',
+        base_uri: ENV['ILS_CONNECTOR_BASE_URL'],
+        body: sirsi_data,
+        headers: {Authorization: jwt}
+      )
+    end
+    $logger.info "Sirsi Response: #{sirsi_response.code} - #{(time * 1000).round} mS"
     if !sirsi_response.success?
       $logger.error "ERROR during Sirsi Hold (Order: #{self.as_json}): #{sirsi_response.body}"
+    else
+      $logger.info "Sirsi hold: #{sirsi_response.body}"
     end
   end
 

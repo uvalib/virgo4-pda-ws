@@ -51,7 +51,7 @@ configure do
                   from: ENV['SMTP_FROM_EMAIL'],
                   via: :smtp,
                   via_options: {
-                    address: ENV['SMTP_ADDRESS'],
+                    address: ENV['SMTP_HOST'],
                     port: ENV['SMTP_PORT']
                   }
                 }
