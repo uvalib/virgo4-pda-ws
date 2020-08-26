@@ -10,7 +10,7 @@ get '/orders' do
 end
 
 get '/check/:id' do |id|
-  if Order.exists?(catalog_key: id)
+  if Order.where(catalog_key: id).where("vendor_order_number IS NOT NULL").exists?
     status 200
   else
     status 404
@@ -18,12 +18,13 @@ get '/check/:id' do |id|
 end
 
 post '/orders' do
+  @order = Order.find_or_initialize_by(params)
   jwt = request.env['HTTP_AUTHORIZATION']
+  @order.jwt = jwt
   token = jwt.match(/^Bearer\s+(.*)$/).captures.first
   claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
-  params[:user_claims] = claims.first
-  params[:jwt] = jwt
-  @order = Order.new(params)
+  @order.user_claims = claims.first.symbolize_keys if claims.first.present?
+
   if @order.save && @order.submit_order
     send_confirmation_email
     status 201

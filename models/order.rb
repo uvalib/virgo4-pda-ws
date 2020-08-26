@@ -1,7 +1,7 @@
 class Order < ActiveRecord::Base
   include HTTParty
   base_uri ENV['PROQUEST_BASE_URL']
-  default_timeout 8
+  default_timeout 30
 
   attr_accessor :user_claims
   validate :user_authorized?
@@ -12,37 +12,63 @@ class Order < ActiveRecord::Base
   # Custom validation messages go in config/locales/en.yml
   validates_uniqueness_of :isbn
 
+  HTTP_ERRORS = [
+    EOFError,
+    Errno::ECONNRESET,
+    Errno::ECONNREFUSED,
+    Errno::EINVAL,
+    Net::HTTPBadResponse,
+    Net::HTTPHeaderSyntaxError,
+    Net::ProtocolError,
+    Timeout::Error,
+  ]
+
 
   def submit_order
-    order_data = {
-      apiKey: ENV['PROQUEST_API_KEY'],
-      Quantity: 1,
-      OrderType: 'CouttsOrder',
-      Oemadm: ENV['PROQUEST_ADMIN_EMAIL'],
-      ISBN: isbn,
-      patronid: computing_id,
-      Site: hold_library,
-      Budget: fund_code,
-      Loantype: loan_type
-    }
-    order_response = nil
-    time = Benchmark.realtime do
-      order_response = self.class.get('/order', query: order_data)
+    if vendor_order_number.present?
+      # order has already been submitted
+      errors.add(:isbn, I18n.t('activerecord.errors.models.order.attributes.isbn.taken'))
+      return false
     end
-    $logger.info "Proquest Response: #{order_response.code} - #{(time * 1000).round} mS"
 
-    if order_response.success?
-      self.vendor_order_number = order_response.parsed_response['OrderNumber']
-      $logger.info "Order #{id} sent to Proquest"
-      if saved = self.save
-        create_sirsi_hold
-      else
-        $logger.error "ERROR saving after order #{id} sent to Proquest. #{self.errors.full_messages}"
+    begin
+      order_data = {
+        apiKey: ENV['PROQUEST_API_KEY'],
+        Quantity: 1,
+        OrderType: 'CouttsOrder',
+        Oemadm: ENV['PROQUEST_ADMIN_EMAIL'],
+        ISBN: isbn,
+        patronid: computing_id,
+        Site: hold_library,
+        Budget: fund_code,
+        Loantype: loan_type
+      }
+      order_response = nil
+      time = Benchmark.realtime do
+        order_response = self.class.get('/order', query: order_data)
       end
-      return saved
-    else
-      $logger.error "ProQuest API failure: #{response.body}"
-      errors.add(:base, 'There was a problem creating this order with ProQuest. Please try again later.')
+      $logger.info "Proquest Response: #{order_response.code} - #{(time * 1000).round} mS"
+
+      if order_response.success?
+        self.vendor_order_number = order_response.parsed_response['OrderNumber']
+        $logger.info "Order #{id} sent to Proquest"
+        if saved = self.save
+          create_sirsi_hold
+        else
+          $logger.error "ERROR saving after order #{id} sent to Proquest. #{self.errors.full_messages}"
+        end
+        return saved
+      else
+        $logger.error "ERROR ProQuest API failure: #{response.body}"
+        errors.add(:base, 'There was a problem creating this order with ProQuest. Please try again later.')
+        return false
+      end
+
+    rescue *HTTP_ERRORS => e
+
+      errors.add(:base, 'There was a problem creating your order. Please try again later.')
+      $logger.error "HTTP ERROR: #{e}"
+
       return false
     end
   end
