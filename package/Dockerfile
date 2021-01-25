@@ -1,4 +1,4 @@
-FROM ruby:2.7.1-alpine3.11
+FROM ruby:2.7.2-alpine3.13
 
 # Add necessary packages
 RUN apk --update add bash tzdata build-base ca-certificates postgresql-client postgresql-dev libev
