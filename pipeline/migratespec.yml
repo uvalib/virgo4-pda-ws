@@ -16,7 +16,9 @@ phases:
 
   pre_build:
     commands:
-      - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+      - docker version
+      - PASSWORD=$(aws ecr get-login-password --region $AWS_REGION)
+      - docker login --username AWS --password $PASSWORD $CONTAINER_REGISTRY
       - latest_build=$(aws --region=$AWS_REGION ssm get-parameter --name /containers/$CONTAINER_IMAGE/latest | grep "Value" | awk -F\" '{print $4}')
 
   build:
