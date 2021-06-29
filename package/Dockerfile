@@ -1,7 +1,7 @@
 FROM ruby:2.7.2-alpine3.13
 
 # Add necessary packages
-RUN apk --update add bash tzdata build-base ca-certificates postgresql-client postgresql-dev libev
+RUN apk --update add bash tzdata build-base ca-certificates postgresql-client postgresql-dev libev && rm -rf /var/cache/apk/*
 
 # Create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
@@ -43,3 +43,7 @@ CMD scripts/entry.sh
 
 # move in the profile
 COPY package/container_bash_profile /home/docker/.profile
+
+#
+# end of file
+#
