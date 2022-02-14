@@ -1,4 +1,4 @@
-FROM ruby:2.7.2-alpine3.13
+FROM public.ecr.aws/docker/library/ruby:2.7.5-alpine3.15
 
 # Add necessary packages
 RUN apk --update add bash tzdata build-base ca-certificates postgresql-client postgresql-dev libev && rm -rf /var/cache/apk/*
