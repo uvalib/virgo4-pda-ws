@@ -1,4 +1,5 @@
 
+require 'sinatra/json'
 before do
   content_type :json
 end

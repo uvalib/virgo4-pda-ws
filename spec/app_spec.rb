@@ -7,7 +7,8 @@ describe "create ATO Order", type: :controller do
     hold_library: 'ALDERMAN',
     fund_code: 'test',
     loan_type: 'test',
-    isbn: '1234',
+    # 13 digits, isbn needs to be unique
+    isbn: rand.to_s[2..14] ,
     barcode: '1234'
   }
 
