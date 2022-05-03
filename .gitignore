@@ -5,3 +5,4 @@ scripts/docker
 env.*
 .env
 run.sh
+test.sh

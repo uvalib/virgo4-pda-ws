@@ -3,10 +3,22 @@ before do
   content_type :json
 end
 
-helpers EmailHelpers
+helpers EmailHelpers, AuthHelpers
 
 get '/orders' do
-  Order.all.to_json
+  authorize_admin
+  @orders = Order.order(:id).page(params[:page])
+  page = @orders.page
+  json ({
+    orders: @orders,
+    pagination: {
+      current_page: page.current_page,
+      next_page: page.next_page,
+      prev_page: page.prev_page,
+      total_pages: page.total_pages,
+      total_count: page.total_count
+    }
+  })
 end
 
 get '/check/:id' do |id|
@@ -19,11 +31,7 @@ end
 
 post '/orders' do
   @order = Order.find_or_initialize_by(params)
-  jwt = request.env['HTTP_AUTHORIZATION']
-  @order.jwt = jwt
-  token = jwt.match(/^Bearer\s+(.*)$/).captures.first
-  claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
-  @order.user_claims = claims.first.symbolize_keys if claims.first.present?
+  authorize_order
 
   if @order.save && @order.submit_order
     send_confirmation_email

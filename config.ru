@@ -30,7 +30,7 @@ configure do
   unless ENV['V4_JWT_KEY']
     raise "V4_JWT_KEY required."
   end
-  NO_AUTH_PATHS = %w(/version /healthcheck)
+  NO_AUTH_PATHS = %w(/version /healthcheck /favicon.ico)  # TODO: REMOVE ORDES
   use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
                         exclude: NO_AUTH_PATHS
                       }
