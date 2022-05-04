@@ -9,15 +9,14 @@ helpers EmailHelpers, AuthHelpers
 get '/orders' do
   authorize_admin
   @orders = Order.order(:id).page(params[:page])
-  page = @orders.page
   json ({
     orders: @orders,
     pagination: {
-      current_page: page.current_page,
-      next_page: page.next_page,
-      prev_page: page.prev_page,
-      total_pages: page.total_pages,
-      total_count: page.total_count
+      current_page: @orders.current_page,
+      next_page: @orders.next_page,
+      prev_page: @orders.prev_page,
+      total_pages: @orders.total_pages,
+      total_count: @orders.total_count
     }
   })
 end
