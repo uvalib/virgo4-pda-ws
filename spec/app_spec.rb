@@ -4,7 +4,7 @@ describe "create ATO Order", type: :controller do
   order_params = {
     catalog_key: 'u1234',
     computing_id: 'mst3k',
-    hold_library: 'ALDERMAN',
+    hold_library: 'SHANON',
     fund_code: 'test',
     loan_type: 'test',
     # 13 digits, isbn needs to be unique

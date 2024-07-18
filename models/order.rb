@@ -51,7 +51,7 @@ class Order < ActiveRecord::Base
 
       if order_response.success?
         self.vendor_order_number = order_response.parsed_response['OrderNumber']
-        $logger.info "Order #{id} sent to Proquest"
+        $logger.info "Order #{id} sent to Proquest. Vendor number: #{self.vendor_order_number}"
         if saved = self.save
           create_sirsi_hold
         else
