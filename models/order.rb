@@ -24,6 +24,7 @@ class Order < ActiveRecord::Base
   ]
 
 
+  # Docs from Proquest: https://support.proquest.com/s/article/OASIS-Ordering-API?language=en_US
   def submit_order
     if vendor_order_number.present?
       # order has already been submitted
@@ -43,23 +44,24 @@ class Order < ActiveRecord::Base
         Budget: fund_code,
         Loantype: loan_type
       }
+      $logger.info "Sending order: #{order_data.without(:apiKey)}"
       order_response = nil
       time = Benchmark.realtime do
         order_response = self.class.get('/order', query: order_data)
       end
-      $logger.info "Proquest Response: #{order_response.code} - #{(time * 1000).round} mS"
+      $logger.info "Proquest Response: #{order_response.body} - #{(time * 1000).round} mS"
 
-      if order_response.success?
+      if order_response.success? && order_response.parsed_response['Code'] == 100
         self.vendor_order_number = order_response.parsed_response['OrderNumber']
         $logger.info "Order #{id} sent to Proquest. Vendor number: #{self.vendor_order_number}"
         if saved = self.save
           create_sirsi_hold
         else
-          $logger.error "ERROR saving after order #{id} sent to Proquest. #{self.errors.full_messages}"
+          $logger.error "ERROR saving after order #{id} was sent to Proquest. #{self.errors.full_messages}"
         end
         return saved
       else
-        $logger.error "ERROR ProQuest API failure: #{response.body}"
+        $logger.error "ERROR ProQuest API failure: #{order_response.inspect}"
         errors.add(:base, 'There was a problem creating this order with ProQuest. Please try again later.')
         return false
       end
