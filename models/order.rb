@@ -44,24 +44,23 @@ class Order < ActiveRecord::Base
         Budget: fund_code,
         Loantype: loan_type
       }
-      $logger.info "Sending order: #{order_data.without(:apiKey)}"
       order_response = nil
       time = Benchmark.realtime do
-        order_response = self.class.get('/order', query: order_data)
+        order_response = self.class.post('/order', query: order_data)
       end
       $logger.info "Proquest Response: #{order_response.body} - #{(time * 1000).round} mS"
 
       if order_response.success? && order_response.parsed_response['Code'] == 100
         self.vendor_order_number = order_response.parsed_response['OrderNumber']
         $logger.info "Order #{id} sent to Proquest. Vendor number: #{self.vendor_order_number}"
-        if saved = self.save
-          create_sirsi_hold
-        else
+        if !self.save
           $logger.error "ERROR saving after order #{id} was sent to Proquest. #{self.errors.full_messages}"
+          return false
         end
-        return saved
+        return true
       else
         $logger.error "ERROR ProQuest API failure: #{order_response.inspect}"
+        $logger.info "Request was #{order_response.request.inspect}"
         errors.add(:base, 'There was a problem creating this order with ProQuest. Please try again later.')
         return false
       end
@@ -87,28 +86,4 @@ class Order < ActiveRecord::Base
       return false
     end
   end
-
-  def create_sirsi_hold
-    sirsi_data = {
-      titleKey: catalog_key,
-      itemBarcode: barcode,
-      pickupLibrary: 'CLEMONS'
-    }
-    sirsi_response = nil
-
-    time = Benchmark.realtime do
-      sirsi_response = self.class.post('/v4/requests/hold',
-        base_uri: ENV['ILS_CONNECTOR_BASE_URL'],
-        body: sirsi_data,
-        headers: {Authorization: jwt}
-      )
-    end
-    $logger.info "Sirsi Response: #{sirsi_response.code} - #{(time * 1000).round} mS"
-    if !sirsi_response.success?
-      $logger.error "ERROR during Sirsi Hold (Order: #{self.as_json}): #{sirsi_response.body}"
-    else
-      $logger.info "Sirsi hold: #{sirsi_response.body}"
-    end
-  end
-
 end
