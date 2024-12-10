@@ -1,8 +1,7 @@
 #
 #
 #
-
-FROM public.ecr.aws/docker/library/ruby:3.2.4-alpine3.20
+FROM public.ecr.aws/docker/library/ruby:3.2.6-alpine3.21
 
 # Add necessary packages
 RUN apk --update add bash tzdata build-base ca-certificates postgresql-client postgresql-dev libev && rm -rf /var/cache/apk/*
@@ -15,7 +14,7 @@ ENV TZ=UTC
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Specify home
-ENV APP_HOME /virgo4-pda
+ENV APP_HOME=/virgo4-pda
 WORKDIR $APP_HOME
 
 # Copy the Gemfile into the image and temporarily set the working directory to where they are.
@@ -39,7 +38,7 @@ USER docker
 
 # define port and startup script
 EXPOSE 8080
-CMD scripts/entry.sh
+ENTRYPOINT ["scripts/entry.sh"]
 
 # move in the profile
 COPY package/container_bash_profile /home/docker/.profile
