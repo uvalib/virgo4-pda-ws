@@ -38,7 +38,7 @@ USER docker
 
 # define port and startup script
 EXPOSE 8080
-ENTRYPOINT ["scripts/entry.sh"]
+CMD ["scripts/entry.sh"]
 
 # move in the profile
 COPY package/container_bash_profile /home/docker/.profile
